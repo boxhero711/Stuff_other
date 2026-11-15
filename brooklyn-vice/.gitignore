@@ -1,0 +1,16 @@
+# Video and audio media: never commit
+sources/
+capture/
+out/
+vo/*.wav
+vo/*.mp3
+clips/*.mp4
+clips/*.mov
+*.mp4
+*.mov
+*.mkv
+# Secrets
+.env
+*.token
+client_secret*.json
+__pycache__/
