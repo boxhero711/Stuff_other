@@ -26,7 +26,7 @@ async function render(page, asset, opts) {
   const params = new URLSearchParams({ asset });
   for (const [k, v] of Object.entries(opts)) {
     if (k === "out") continue;
-    params.set(k, (k === "bg" || k === "host") ? "file://" + path.resolve(v) : v);
+    params.set(k, ((k === "bg" || k === "host") && v !== "none") ? "file://" + path.resolve(v) : v);
   }
   await page.goto(TEMPLATE + "#" + params.toString());
   await page.reload(); // hash-only navigation does not re-run scripts

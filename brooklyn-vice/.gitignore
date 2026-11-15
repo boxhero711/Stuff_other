@@ -14,3 +14,4 @@ clips/*.mov
 *.token
 client_secret*.json
 __pycache__/
+edit/stingers/

@@ -1,4 +1,4 @@
-# Brooklyn Vice
+# Brooklyn Vice Live
 
 GTA 6 clip channel for YouTube (Shorts + long-form) and Instagram Reels. This file is the project brief and the standing rules for Claude Code. Read it before any task.
 
@@ -8,7 +8,7 @@ Not legal advice. Before spending money on this, have a media/IP attorney review
 
 ## 1. What we are building
 
-A repeatable pipeline that turns GTA 6 gameplay into short, edited, commentated clips under one brand: Brooklyn Vice.
+A repeatable pipeline that turns GTA 6 gameplay into short, edited, commentated clips under one brand: Brooklyn Vice Live.
 
 Working assumptions (change these here if they are wrong):
 
@@ -116,7 +116,7 @@ Every clip has four layers. A clip missing any layer does not ship.
 1. Footage: an approved source clip, kept short, reframed to 9:16 for Shorts/Reels or 16:9 for long-form.
 2. Voice: host commentary, recorded for that clip.
 3. Edit: cuts, zooms, captions, sound design.
-4. Frame: Brooklyn Vice title card, lower third, end card.
+4. Frame: Brooklyn Vice Live title card, lower third, end card.
 
 Series ideas (each needs its own angle, not one template with swapped footage):
 

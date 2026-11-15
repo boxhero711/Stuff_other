@@ -102,7 +102,7 @@ No story spoilers. Ever.
 
 [30-45s, host to camera, end on logo]
 Same hustle. New city.
-Subscribe to Brooklyn Vice.
+Subscribe to Brooklyn Vice Live.
 ```
 
 No game footage in the trailer, so it can go up before release.

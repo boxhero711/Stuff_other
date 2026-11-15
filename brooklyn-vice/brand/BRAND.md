@@ -1,4 +1,4 @@
-# Brooklyn Vice brand kit
+# Brooklyn Vice Live brand kit
 
 Everything here is our own work. It has no Rockstar or GTA logos, key art, or game characters. It has no real people. The host photo is a slot you fill with a photo of a host who has agreed to appear.
 
@@ -46,6 +46,7 @@ Rules:
 | `banner.png` | 2560x1440 | YouTube banner. Logo and text sit in the 1546x423 safe area. |
 | `banner-safe.png` | 2560x1440 | Same banner with the safe area drawn on it. For checking only. Do not upload. |
 | `watermark.png` | 150x150 | YouTube video watermark (Studio > Customization > Branding) |
+| `bug.png` | 600x90, transparent | Corner tag burned into every clip by `edit/clip.py` |
 | `title-16x9.png` | 1920x1080 | Long-form intro card (1 to 2 seconds) |
 | `title-9x16.png` | 1080x1920 | Shorts and Reels intro or outro card |
 | `lower-third-16x9.png` | 1920x1080, transparent | Host name overlay for long-form |

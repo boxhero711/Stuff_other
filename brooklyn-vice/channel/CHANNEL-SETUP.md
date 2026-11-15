@@ -6,8 +6,8 @@ Do these steps by hand in YouTube Studio. Claude Code does not create accounts o
 
 1. Sign in to the Google account that will own the channel. Use a brand account so more than one person can manage it.
 2. YouTube > Create a channel > use a custom name.
-3. Name: **Brooklyn Vice**
-4. Handle: **@BrooklynVice**. Backups if taken: @BrooklynViceTV, @BKVice, @BrooklynViceHQ.
+3. Name: **Brooklyn Vice Live**
+4. Handle: **@BrooklynViceLive**. Backups if taken: @BrooklynViceLiveTV, @BKViceLive, @BrooklynViceLiveHQ. ("Brooklyn Vice" and @BrooklynVice are taken.)
 5. Turn on 2-step verification for the account. Verify the channel by phone (this unlocks custom thumbnails and uploads over 15 minutes).
 6. Grab the same handle on Instagram, TikTok and X now, even if you post later.
 
@@ -40,7 +40,7 @@ Links: Instagram, TikTok, contact email. Add a business contact email in the sam
 Channel keywords (Studio > Settings > Channel > Basic info):
 
 ```
-"GTA 6" "GTA VI" "GTA 6 gameplay" "Vice City" "Leonida" "GTA 6 funny moments" "GTA 6 details" "GTA 6 stunts" "Brooklyn" "New York" "GTA 6 reaction"
+Brooklyn Vice Live, GTA 6, GTA VI, GTA 6 gameplay, GTA 6 funny moments, GTA 6 reaction, GTA 6 details, GTA 6 stunts, GTA 6 fails, GTA 6 shorts, Vice City, Leonida, Brooklyn, New York, New Yorker, gaming
 ```
 
 Country: United States.
@@ -74,7 +74,7 @@ Subscribe for daily GTA 6 Shorts and a Sunday recap.
 Unofficial fan channel. Not affiliated with or endorsed by Rockstar Games or Take-Two Interactive.
 ```
 
-* Tags: `GTA 6, GTA VI, GTA 6 gameplay, Vice City, Leonida, Brooklyn Vice`
+* Tags: `GTA 6, GTA VI, GTA 6 gameplay, Vice City, Leonida, Brooklyn Vice Live`
 * Visibility: **Private**. Nothing goes public until the compliance gate (CLAUDE.md section 4) passes and a human approves.
 * Category: **Gaming**. Then set the game title field on each video to Grand Theft Auto VI. This links the video to the game's page and search results.
 * Made for kids: **No**.
@@ -91,7 +91,7 @@ Unofficial fan channel. Not affiliated with or endorsed by Rockstar Games or Tak
 ## Instagram bio
 
 ```
-Brooklyn Vice 👑
+Brooklyn Vice Live 👑
 GTA 6 through Brooklyn eyes
 Daily Reels. No story spoilers.
 Unofficial fan account. Not affiliated with Rockstar Games.
