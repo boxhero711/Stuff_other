@@ -1,0 +1,333 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Brooklyn Vice brand templates</title>
+<style>
+@font-face { font-family: "Wet"; src: url("fonts/RubikWetPaint-Regular.ttf"); }
+@font-face { font-family: "Marker"; src: url("fonts/PermanentMarker-Regular.ttf"); }
+@font-face { font-family: "Anton"; src: url("fonts/Anton-Regular.ttf"); }
+@font-face { font-family: "Tag"; src: url("fonts/SedgwickAveDisplay-Regular.ttf"); }
+@font-face { font-family: "Inter"; src: url("fonts/Inter-Variable.ttf"); }
+
+:root {
+  --night: #12061f;
+  --plum: #2a1146;
+  --violet: #5b1d8a;
+  --pink: #ff2ea6;
+  --cyan: #19e3ff;
+  --sunset: #ff8a3d;
+  --gold: #ffc94a;
+  --white: #ffffff;
+  --ink: #000000;
+  --vice: linear-gradient(100deg, var(--pink) 0%, #ff4fd0 35%, #7f8cff 65%, var(--cyan) 100%);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: transparent; overflow: hidden; }
+body.opaque { background: var(--night); }
+#stage { position: relative; overflow: hidden; }
+.abs { position: absolute; }
+.scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+.slot-img { position: absolute; object-fit: cover; }
+
+/* Logo lockup. Size everything from --s (1 = 100px BROOKLYN cap height-ish). */
+.logo { position: absolute; display: flex; flex-direction: column; align-items: center; transform-origin: center; }
+.logo .crown { width: calc(var(--s) * 120px); height: auto; margin-bottom: calc(var(--s) * -14px); margin-left: calc(var(--s) * -330px); transform: rotate(-12deg); }
+.logo .brooklyn {
+  font-family: "Wet"; color: var(--white); line-height: .95;
+  font-size: calc(var(--s) * 150px); letter-spacing: calc(var(--s) * 2px);
+  -webkit-text-stroke: calc(var(--s) * 4px) var(--ink); paint-order: stroke fill;
+  text-shadow: calc(var(--s) * 8px) calc(var(--s) * 8px) 0 var(--ink), 0 0 calc(var(--s) * 30px) rgba(0,0,0,.6);
+}
+.logo .vicewrap { position: relative; margin-top: calc(var(--s) * -10px); transform: rotate(-6deg); }
+.logo .vice, .logo .vice-back {
+  font-family: "Marker"; font-size: calc(var(--s) * 175px); line-height: 1; letter-spacing: calc(var(--s) * 4px);
+  display: block; padding: 0 calc(var(--s) * 20px);
+}
+.logo .vice-back { position: absolute; inset: 0; color: var(--ink); -webkit-text-stroke: calc(var(--s) * 22px) var(--ink); filter: drop-shadow(0 0 calc(var(--s) * 24px) rgba(255,46,166,.55)); }
+.logo .vice { position: relative; background: var(--vice); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.logo .swoosh { width: calc(var(--s) * 520px); margin-top: calc(var(--s) * -40px); transform: rotate(-6deg); }
+
+.tag { font-family: "Tag"; color: var(--pink); line-height: 1.02; text-transform: uppercase; text-shadow: 0 0 18px rgba(255,46,166,.6); }
+.tag.cyan { color: var(--cyan); text-shadow: 0 0 18px rgba(25,227,255,.6); }
+.tag.white { color: #f3e9ff; text-shadow: 0 2px 0 #000; }
+
+.sign {
+  position: absolute; background: #0b6b3a; color: #fff; font-family: "Inter"; font-weight: 600;
+  border: 6px solid #fff; border-radius: 12px; box-shadow: 0 0 0 4px #0b6b3a, 0 18px 40px rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center; letter-spacing: .02em;
+}
+.headline {
+  font-family: "Anton"; text-transform: uppercase; color: #fff; line-height: .98;
+  -webkit-text-stroke: 10px #000; paint-order: stroke fill;
+  text-shadow: 8px 8px 0 #000;
+}
+.headline .hl { color: var(--gold); }
+.headline .pk { color: var(--pink); }
+.headline .cy { color: var(--cyan); }
+.host-ph { position: absolute; display: flex; align-items: flex-end; justify-content: center; }
+.host-ph svg { width: 100%; height: 100%; }
+.frame-box { position: absolute; border: 6px solid var(--pink); border-radius: 18px; box-shadow: 0 0 30px rgba(255,46,166,.7), inset 0 0 30px rgba(25,227,255,.25); background: rgba(10,4,20,.55); }
+.label { font-family: "Inter"; font-weight: 800; color: #fff; letter-spacing: .08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+
+<script>
+/* ---------- shared drawing helpers ---------- */
+const P = new URLSearchParams(location.hash.slice(1));
+const ASSET = P.get("asset") || "banner";
+const OPT = (k, d) => (P.has(k) ? P.get(k) : d);
+
+function rng(seed) { let s = seed; return () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; }
+
+const CROWN = (stroke = "#fff", w = 8) => `
+<svg class="crown" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10 72 L18 22 L42 50 L60 12 L78 50 L102 22 L110 72 Z" fill="none" stroke="${stroke}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M12 84 L108 84" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round"/>
+  <circle cx="18" cy="16" r="6" fill="${stroke}"/><circle cx="60" cy="7" r="6" fill="${stroke}"/><circle cx="102" cy="16" r="6" fill="${stroke}"/>
+</svg>`;
+
+const SWOOSH = `
+<svg class="swoosh" viewBox="0 0 520 60" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="sw" x1="0" x2="1"><stop offset="0" stop-color="#ff2ea6"/><stop offset="1" stop-color="#19e3ff"/></linearGradient></defs>
+  <path d="M10 44 C 140 22, 300 18, 510 10" stroke="#000" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M10 44 C 140 22, 300 18, 510 10" stroke="url(#sw)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M120 33 l0 20 M400 15 l0 26" stroke="#ff2ea6" stroke-width="6" stroke-linecap="round"/>
+</svg>`;
+
+function logo(s, cx, y, extra = "") {
+  return `<div class="logo" style="--s:${s}; left:${cx}px; top:${y}px; transform:translateX(-50%); ${extra}">
+    ${CROWN("#fff", 7)}
+    <div class="brooklyn">BROOKLYN</div>
+    <div class="vicewrap"><span class="vice-back">VICE</span><span class="vice">VICE</span></div>
+    ${SWOOSH}
+  </div>`;
+}
+
+/* Palm silhouette at base (x,y), height h, mirror m (1 or -1). */
+function palm(x, y, h, m = 1, color = "#0b0414") {
+  const top = [x + m * h * 0.18, y - h];
+  let d = `<path d="M${x - 9} ${y} Q ${x + m * h * 0.05} ${y - h * 0.5} ${top[0]} ${top[1]} L ${top[0] + 8} ${top[1] + 4} Q ${x + m * h * 0.08 + 10} ${y - h * 0.5} ${x + 11} ${y} Z" fill="${color}"/>`;
+  const fronds = [[-150, 0.55], [-120, 0.62], [-80, 0.55], [-40, 0.6], [-10, 0.5], [20, 0.58], [60, 0.55], [100, 0.5], [150, 0.45], [-170, 0.4]];
+  for (const [ang, len] of fronds) {
+    const a = (ang * Math.PI) / 180, L = h * len;
+    const ex = top[0] + Math.cos(a) * L, ey = top[1] + Math.sin(a) * L * 0.55 + L * 0.35;
+    const cx = top[0] + Math.cos(a) * L * 0.5, cy = top[1] - L * 0.25;
+    d += `<path d="M${top[0]} ${top[1]} Q ${cx} ${cy} ${ex} ${ey} Q ${cx} ${cy + 22} ${top[0]} ${top[1] + 10} Z" fill="${color}"/>`;
+  }
+  return d;
+}
+
+/* Full sunset scene in a 1920x1080 coordinate box. slice fills any aspect. */
+function scene({ dim = 0, sunY = 600 } = {}) {
+  const r = rng(7);
+  let skyline = "", windows = "";
+  let x = 180;
+  while (x < 1760) {
+    const w = 40 + r() * 70, h = 70 + r() * 210 * (1 - Math.abs(x - 960) / 1400);
+    skyline += `<rect x="${x}" y="${770 - h}" width="${w}" height="${h + 40}"/>`;
+    for (let i = 0; i < h / 22; i++) if (r() > 0.55) windows += `<rect x="${x + 6 + r() * (w - 14)}" y="${770 - h + 10 + i * 22}" width="4" height="6"/>`;
+    x += w + 2 + r() * 10;
+  }
+  // Tall tapered tower (generic supertall), left of center
+  const tower = `<path d="M1040 770 L1040 360 L1066 300 L1098 300 L1124 360 L1124 770 Z"/><rect x="1080" y="230" width="4" height="72"/>`;
+  for (let i = 0; i < 18; i++) if (r() > 0.4) windows += `<rect x="${1050 + r() * 64}" y="${380 + i * 20}" width="4" height="6"/>`;
+
+  // Brooklyn Bridge
+  const deckY = 790, t1 = 560, t2 = 1360, tw = 120, th = 360;
+  const towerPath = (cx) => {
+    const L = cx - tw / 2, R = cx + tw / 2, T = deckY - th;
+    const arch = (ax) => `M${ax - 18} ${deckY - 30} L${ax - 18} ${T + 120} Q ${ax - 18} ${T + 80} ${ax} ${T + 62} Q ${ax + 18} ${T + 80} ${ax + 18} ${T + 120} L${ax + 18} ${deckY - 30} Z`;
+    return `<path fill-rule="evenodd" d="M${L} ${deckY + 40} L${L} ${T + 20} L${L + 8} ${T} L${R - 8} ${T} L${R} ${T + 20} L${R} ${deckY + 40} Z ${arch(cx - 27)} ${arch(cx + 27)}"/>`;
+  };
+  const T = deckY - th + 6;
+  let cables = `<path d="M${t1} ${T} Q ${(t1 + t2) / 2} ${deckY + 60} ${t2} ${T}"/>`
+    + `<path d="M${t1} ${T} Q ${t1 - 300} ${deckY - 40} -40 ${deckY - 10}"/>`
+    + `<path d="M${t2} ${T} Q ${t2 + 300} ${deckY - 40} 1960 ${deckY - 10}"/>`;
+  let susp = "";
+  for (let sx = t1 + 30; sx < t2 - 20; sx += 26) {
+    const tt = (sx - t1) / (t2 - t1);
+    const cy = (1 - tt) * (1 - tt) * T + 2 * (1 - tt) * tt * (deckY + 60) + tt * tt * T;
+    susp += `<line x1="${sx}" y1="${cy}" x2="${sx}" y2="${deckY}"/>`;
+  }
+  // diagonal stays
+  for (const cx of [t1, t2]) for (let k = 1; k <= 7; k++) {
+    susp += `<line x1="${cx}" y1="${T + 30}" x2="${cx - k * 40}" y2="${deckY}"/><line x1="${cx}" y1="${T + 30}" x2="${cx + k * 40}" y2="${deckY}"/>`;
+  }
+  let lights = "";
+  for (let lx = 0; lx < 1920; lx += 34) lights += `<circle cx="${lx}" cy="${deckY + 4}" r="3.2"/>`;
+
+  // water reflections
+  let refl = "";
+  const r2 = rng(3);
+  for (let i = 0; i < 26; i++) {
+    const yy = 840 + i * 9 + r2() * 4, w = 260 - i * 7 + r2() * 80;
+    refl += `<rect x="${960 - w / 2 + (r2() - .5) * 60}" y="${yy}" width="${w}" height="3" rx="1.5"/>`;
+  }
+
+  let sunStripes = "";
+  for (let i = 0; i < 7; i++) sunStripes += `<rect x="600" y="${sunY + 20 + i * 26}" width="720" height="${4 + i * 2.2}"/>`;
+
+  return `
+<svg class="scene" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#140a33"/><stop offset=".32" stop-color="#4b1a86"/>
+      <stop offset=".55" stop-color="#c22f8f"/><stop offset=".7" stop-color="#ff6f6a"/><stop offset=".76" stop-color="#ffa24a"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff07a"/><stop offset=".55" stop-color="#ff9a4a"/><stop offset="1" stop-color="#ff2ea6"/></linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1460"/><stop offset="1" stop-color="#0a0418"/></linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".62" r=".6"><stop offset="0" stop-color="#ff2ea6" stop-opacity=".35"/><stop offset="1" stop-color="#ff2ea6" stop-opacity="0"/></radialGradient>
+    <mask id="sunmask"><rect width="1920" height="1080" fill="#fff"/><g fill="#000">${sunStripes}</g></mask>
+    <filter id="soft"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <g opacity=".55" fill="#fff">${Array.from({length: 60}, (_, i) => { const q = rng(100 + i); return `<circle cx="${q() * 1920}" cy="${q() * 330}" r="${q() * 1.6 + .4}"/>`; }).join("")}</g>
+  <circle cx="960" cy="${sunY}" r="250" fill="url(#sun)" mask="url(#sunmask)"/>
+  <rect width="1920" height="1080" fill="url(#glow)"/>
+  <g fill="#2b0f4a">${skyline}${tower}</g>
+  <g fill="#ffd27a" opacity=".75">${windows}</g>
+  <rect y="790" width="1920" height="290" fill="url(#water)"/>
+  <g fill="#ff7ab8" opacity=".55">${refl}</g>
+  <g fill="#0f0520">${towerPath(t1)}${towerPath(t2)}<rect x="-20" y="${deckY - 6}" width="1960" height="16"/></g>
+  <g fill="none" stroke="#0f0520" stroke-width="5">${cables}</g>
+  <g stroke="#0f0520" stroke-width="1.6" opacity=".9">${susp}</g>
+  <g fill="#ffd9f0">${lights}</g>
+  ${palm(110, 1090, 620, 1)}${palm(260, 1100, 470, 1)}${palm(1820, 1090, 640, -1)}${palm(1660, 1100, 430, -1)}
+  ${dim ? `<rect width="1920" height="1080" fill="#0a0414" opacity="${dim}"/>` : ""}
+</svg>`;
+}
+
+/* Host photo: real image if given, otherwise a labelled silhouette placeholder. */
+function host(x, y, w, h) {
+  const src = OPT("host", "");
+  if (src) return `<img class="slot-img" src="${src}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 30px rgba(255,46,166,.6))">`;
+  return `<div class="host-ph" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">
+    <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMax meet"><g fill="rgba(255,255,255,.08)" stroke="#19e3ff" stroke-width="4" stroke-dasharray="14 10">
+      <circle cx="200" cy="150" r="95"/><path d="M30 500 C 40 330, 120 270, 200 270 C 280 270, 360 330, 370 500 Z"/></g>
+      <text x="200" y="420" text-anchor="middle" font-family="Inter" font-weight="800" font-size="26" fill="#19e3ff">HOST PHOTO</text>
+      <text x="200" y="452" text-anchor="middle" font-family="Inter" font-size="18" fill="#bfefff">cutout PNG goes here</text></svg></div>`;
+}
+function bgImage() {
+  const src = OPT("bg", "");
+  return src ? `<img class="slot-img" src="${src}" style="inset:0;width:100%;height:100%">` : "";
+}
+/* Headline text. Use *word* for gold, _word_ for pink, ~word~ for cyan. | for line break. */
+function fmt(t) {
+  return t.replace(/\*(.+?)\*/g, '<span class="hl">$1</span>').replace(/_(.+?)_/g, '<span class="pk">$1</span>')
+          .replace(/~(.+?)~/g, '<span class="cy">$1</span>').replace(/\|/g, "<br>");
+}
+
+/* ---------- assets ---------- */
+const ASSETS = {
+  avatar: { w: 800, h: 800, opaque: true, html: () => `
+    <div class="abs" style="inset:0;background:radial-gradient(circle at 50% 42%, #6a1f9c 0%, #2a1146 45%, #12061f 75%)"></div>
+    <div class="abs" style="inset:0;background:radial-gradient(circle at 30% 85%, rgba(255,46,166,.45), transparent 45%), radial-gradient(circle at 75% 80%, rgba(25,227,255,.35), transparent 45%)"></div>
+    <div class="abs" style="left:250px;top:120px;width:300px">${CROWN("#fff", 7).replace('class="crown"', 'style="width:300px"')}</div>
+    <div class="abs" style="left:0;right:0;top:290px;display:flex;justify-content:center;align-items:baseline;gap:0">
+      <span style="font-family:Wet;font-size:330px;line-height:1;color:#fff;-webkit-text-stroke:8px #000;paint-order:stroke fill;text-shadow:12px 12px 0 #000">B</span>
+      <span style="position:relative;display:inline-block;transform:rotate(-8deg);margin-left:-10px">
+        <span style="position:absolute;inset:0;font-family:Marker;font-size:330px;line-height:1;color:#000;-webkit-text-stroke:26px #000">V</span>
+        <span style="position:relative;font-family:Marker;font-size:330px;line-height:1;background:var(--vice);-webkit-background-clip:text;color:transparent">V</span>
+      </span>
+    </div>` },
+
+  watermark: { w: 150, h: 150, html: () => `
+    <div class="abs" style="inset:4px;border-radius:50%;background:#12061f;border:5px solid #ff2ea6;box-shadow:inset 0 0 0 3px #19e3ff"></div>
+    <div class="abs" style="left:45px;top:18px;width:60px">${CROWN("#fff", 9).replace('class="crown"', 'style="width:60px"')}</div>
+    <div class="abs" style="left:0;right:0;top:46px;text-align:center;font-family:Wet;font-size:64px;color:#fff;-webkit-text-stroke:2px #000;paint-order:stroke fill">BV</div>` },
+
+  banner: { w: 2560, h: 1440, opaque: true, html: () => `
+    ${scene({ sunY: 610 })}
+    <div class="sign" style="left:520px;top:300px;width:300px;height:78px;font-size:46px;transform:rotate(-3deg)">Brooklyn</div>
+    ${logo(0.95, 930, 505)}
+    <div class="abs" style="left:1385px;top:560px;width:660px">
+      <div class="tag" style="font-size:72px">Same hustle.<br>New city.</div>
+      <div class="label" style="margin-top:26px;font-size:30px;color:#fff;white-space:nowrap;text-shadow:0 2px 8px #000">GTA 6 through Brooklyn eyes</div>
+      <div class="label" style="margin-top:12px;font-size:22px;color:#19e3ff;white-space:nowrap;text-shadow:0 2px 8px #000">New Shorts daily · Long-form every Sunday</div>
+    </div>` },
+
+  "banner-safe": { w: 2560, h: 1440, opaque: true, html: () => ASSETS.banner.html() + `
+    <div class="abs" style="left:507px;top:508px;width:1546px;height:423px;border:4px dashed #19e3ff"></div>
+    <div class="abs label" style="left:515px;top:470px;font-size:24px;color:#19e3ff">Safe area on all devices: 1546 x 423</div>
+    <div class="abs" style="left:0;right:0;top:0;bottom:0;border:4px dashed rgba(255,255,255,.4)"></div>` },
+
+  "title-16x9": { w: 1920, h: 1080, opaque: true, html: () => `
+    ${scene()}
+    <div class="sign" style="left:90px;top:90px;width:330px;height:84px;font-size:50px;transform:rotate(-4deg)">Brooklyn</div>
+    ${logo(1.25, 960, 250)}
+    <div class="abs tag" style="right:120px;top:120px;font-size:64px;text-align:right">Same hustle.<br>New city.</div>` },
+
+  "title-9x16": { w: 1080, h: 1920, opaque: true, html: () => `
+    ${scene({ sunY: 560 })}
+    <div class="sign" style="left:70px;top:150px;width:330px;height:84px;font-size:50px;transform:rotate(-4deg)">Brooklyn</div>
+    ${logo(0.98, 540, 700)}
+    <div class="abs tag" style="left:90px;top:300px;font-size:70px">Same hustle.<br>New city.</div>` },
+
+  "lower-third-16x9": { w: 1920, h: 1080, html: () => `
+    <div class="abs" style="left:80px;top:840px;display:flex;align-items:stretch;filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))">
+      <div style="background:#000;padding:10px 26px 10px 18px;display:flex;align-items:center;gap:12px;border-left:12px solid #ff2ea6">
+        <div style="width:58px">${CROWN("#fff", 9).replace('class="crown"', 'style="width:58px"')}</div>
+        <div>
+          <div style="font-family:Anton;font-size:56px;color:#fff;line-height:1">${OPT("name", "HOST NAME")}</div>
+          <div class="label" style="font-size:20px;color:#19e3ff;margin-top:4px">${OPT("role", "Brooklyn Vice")}</div>
+        </div>
+      </div>
+      <div style="width:22px;background:var(--vice)"></div>
+    </div>` },
+
+  "lower-third-9x16": { w: 1080, h: 1920, html: () => `
+    <div class="abs" style="left:60px;top:1240px;display:flex;align-items:stretch;filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))">
+      <div style="background:#000;padding:12px 28px 12px 20px;display:flex;align-items:center;gap:14px;border-left:14px solid #ff2ea6">
+        <div style="width:66px">${CROWN("#fff", 9).replace('class="crown"', 'style="width:66px"')}</div>
+        <div>
+          <div style="font-family:Anton;font-size:64px;color:#fff;line-height:1">${OPT("name", "HOST NAME")}</div>
+          <div class="label" style="font-size:24px;color:#19e3ff;margin-top:4px">${OPT("role", "Brooklyn Vice")}</div>
+        </div>
+      </div>
+      <div style="width:24px;background:var(--vice)"></div>
+    </div>` },
+
+  "end-card": { w: 1920, h: 1080, opaque: true, html: () => `
+    ${scene({ dim: 0.45 })}
+    ${logo(0.42, 250, 20)}
+    <div class="abs label" style="left:0;right:0;top:150px;text-align:center;font-size:44px;text-shadow:0 3px 10px #000">Watch next</div>
+    <div class="frame-box" style="left:150px;top:250px;width:760px;height:428px"></div>
+    <div class="frame-box" style="left:1010px;top:250px;width:760px;height:428px;border-color:#19e3ff;box-shadow:0 0 30px rgba(25,227,255,.7)"></div>
+    <div class="abs" style="left:840px;top:750px;width:240px;height:240px;border-radius:50%;border:6px solid #fff;box-shadow:0 0 40px rgba(255,46,166,.8)"></div>
+    <div class="abs tag" style="left:1110px;top:810px;font-size:72px">Subscribe</div>
+    <div class="abs tag cyan" style="left:300px;top:810px;font-size:60px;text-align:right;width:500px">Same hustle.<br>New city.</div>` },
+
+  thumbnail: { w: 1280, h: 720, opaque: true, html: () => `
+    ${OPT("bg", "") ? bgImage() : scene()}
+    <div class="abs" style="inset:0;background:linear-gradient(90deg, rgba(10,4,20,.85) 0%, rgba(10,4,20,.35) 55%, rgba(10,4,20,0) 75%)"></div>
+    ${host(760, 60, 520, 660)}
+    <div class="abs headline" style="left:50px;top:70px;width:740px;font-size:${OPT("size", "128")}px">${fmt(OPT("text", "Brooklyn|*rules*|in Leonida"))}</div>
+    <div class="abs" style="left:40px;bottom:24px;display:flex;align-items:center;gap:10px;background:#000;padding:6px 16px 6px 10px;border-left:8px solid #ff2ea6">
+      <div style="width:40px">${CROWN("#fff", 10).replace('class="crown"', 'style="width:40px"')}</div>
+      <div style="font-family:Wet;font-size:34px;color:#fff">BROOKLYN <span style="font-family:Marker;background:var(--vice);-webkit-background-clip:text;color:transparent">VICE</span></div>
+    </div>` },
+
+  "shorts-cover": { w: 1080, h: 1920, opaque: true, html: () => `
+    ${OPT("bg", "") ? bgImage() : scene({ sunY: 560 })}
+    <div class="abs" style="inset:0;background:linear-gradient(180deg, rgba(10,4,20,.85) 0%, rgba(10,4,20,.2) 40%, rgba(10,4,20,0) 60%)"></div>
+    <div class="abs headline" style="left:60px;right:60px;top:220px;text-align:center;font-size:${OPT("size", "140")}px">${fmt(OPT("text", "New Yorker|*reacts*|to Vice City"))}</div>
+    ${host(190, 900, 700, 780)}
+    <div class="abs" style="left:60px;top:110px;display:flex;align-items:center;gap:10px;background:#000;padding:6px 16px 6px 10px;border-left:8px solid #ff2ea6">
+      <div style="width:44px">${CROWN("#fff", 10).replace('class="crown"', 'style="width:44px"')}</div>
+      <div style="font-family:Wet;font-size:38px;color:#fff">BROOKLYN <span style="font-family:Marker;background:var(--vice);-webkit-background-clip:text;color:transparent">VICE</span></div>
+    </div>` },
+};
+
+const a = ASSETS[ASSET];
+const st = document.getElementById("stage");
+st.style.width = a.w + "px"; st.style.height = a.h + "px";
+if (a.opaque) document.body.classList.add("opaque");
+st.innerHTML = a.html();
+window.ASSET_SIZE = { w: a.w, h: a.h, transparent: !a.opaque };
+window.ASSET_LIST = Object.keys(ASSETS);
+</script>
+</body>
+</html>

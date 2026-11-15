@@ -174,7 +174,8 @@ brooklyn-vice/
     log.csv
     sources.csv             registry of approved source videos
     permissions/
-  brand/                    fonts, colors, title cards, lower thirds
+  brand/                    fonts, colors, title cards, lower thirds (see brand/BRAND.md)
+  channel/                  YouTube setup steps and growth playbook
   docs/                     policy snapshots with date saved
 ```
 
